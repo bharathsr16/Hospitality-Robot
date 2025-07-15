@@ -1,0 +1,9 @@
+entrance:
+  x: 0
+  y: 0
+event_hall:
+  x: 10
+  y: 5
+restroom:
+  x: -5
+  y: 2
