@@ -3,12 +3,18 @@ from hospitality_robot.voice_interaction import listen, speak
 from hospitality_robot.visual_capture import capture_image, process_image
 from hospitality_robot.mapping import load_map, find_location
 
+import os
+
 def main():
     """
     Main function for the hospitality robot.
     """
+    # Get the absolute path to the map file
+    map_file = os.path.join(os.path.dirname(__file__), "..", "tests", "test_map.yaml")
+
+
     # Load the map
-    map_data = load_map("tests/test_map.yaml")
+    map_data = load_map(map_file)
 
     while True:
         # Get user input
