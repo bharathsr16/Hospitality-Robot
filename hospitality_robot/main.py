@@ -9,23 +9,23 @@ import nltk
 def download_nltk_data():
     try:
         nltk.data.find('tokenizers/punkt')
-    except nltk.downloader.DownloadError:
+    except LookupError:
         nltk.download('punkt')
     try:
         nltk.data.find('tokenizers/punkt_tab')
-    except nltk.downloader.DownloadError:
+    except LookupError:
         nltk.download('punkt_tab')
     try:
         nltk.data.find('taggers/averaged_perceptron_tagger')
-    except nltk.downloader.DownloadError:
+    except LookupError:
         nltk.download('averaged_perceptron_tagger')
     try:
         nltk.data.find('chunkers/maxent_ne_chunker')
-    except nltk.downloader.DownloadError:
+    except LookupError:
         nltk.download('maxent_ne_chunker')
     try:
         nltk.data.find('corpora/words')
-    except nltk.downloader.DownloadError:
+    except LookupError:
         nltk.download('words')
 
 def main():
