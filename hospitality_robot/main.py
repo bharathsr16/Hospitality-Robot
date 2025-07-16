@@ -4,8 +4,32 @@ from hospitality_robot.visual_capture import capture_and_detect_faces
 from hospitality_robot.mapping import load_map, find_location, get_location_details
 from hospitality_robot.navigation import RobotNavigator
 import os
+import nltk
+
+def download_nltk_data():
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except nltk.downloader.DownloadError:
+        nltk.download('punkt')
+    try:
+        nltk.data.find('tokenizers/punkt_tab')
+    except nltk.downloader.DownloadError:
+        nltk.download('punkt_tab')
+    try:
+        nltk.data.find('taggers/averaged_perceptron_tagger')
+    except nltk.downloader.DownloadError:
+        nltk.download('averaged_perceptron_tagger')
+    try:
+        nltk.data.find('chunkers/maxent_ne_chunker')
+    except nltk.downloader.DownloadError:
+        nltk.download('maxent_ne_chunker')
+    try:
+        nltk.data.find('corpora/words')
+    except nltk.downloader.DownloadError:
+        nltk.download('words')
 
 def main():
+    download_nltk_data()
     """
     Main function for the hospitality robot.
     """
