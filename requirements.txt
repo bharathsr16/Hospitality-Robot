@@ -4,4 +4,3 @@ opencv-python
 pyyaml
 nltk
 pvporcupine
-PyQt5
