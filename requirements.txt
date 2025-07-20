@@ -5,3 +5,5 @@ pyyaml
 nltk
 pvporcupine
 PyQt5
+transformers
+torch

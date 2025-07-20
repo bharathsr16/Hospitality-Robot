@@ -78,6 +78,8 @@ def main():
                 else:
                     response = handle_text_input(text)
                     speak(response)
+            else:
+                speak("Sorry, I could not understand what you said.")
         elif user_input == "visual":
             response = capture_and_detect_faces()
             print(response)
