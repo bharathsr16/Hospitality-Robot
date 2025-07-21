@@ -1,10 +1,9 @@
-import nltk
-
 def get_intent(text):
     """
     Gets the user's intent from the text.
     """
     # Tokenize the text
+    import nltk
     tokens = nltk.word_tokenize(text.lower())
 
     # Check if the user is asking for a location
@@ -21,11 +20,15 @@ def handle_text_input(text):
     """
     Handles text input from the user.
     """
-    intent, data = get_intent(text)
+    rules = {
+        "hello": "Hello! How can I help you today?",
+        "how are you": "I'm doing great, thanks for asking!",
+        "what is your name": "My name is Hospitality Robot.",
+        "bye": "Goodbye! Have a great day."
+    }
 
-    if intent == "find_location":
-        return f"I will find {data} for you."
-    elif "hello" in text.lower():
-        return "Hello! How can I help you today?"
-    else:
-        return "I'm sorry, I don't understand. Please try again."
+    for rule, response in rules.items():
+        if rule in text.lower():
+            return response
+
+    return "I'm sorry, I don't understand. Please try again."
