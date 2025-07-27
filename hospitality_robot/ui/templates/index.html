@@ -1,0 +1,29 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Campus Map</title>
+        </head>
+        <body>
+            <h1>Campus Map</h1>
+            <form method="post">
+                <label for="start">Start:</label>
+                <select name="start" id="start">
+                    {% for location in locations %}
+                        <option value="{{ location }}" {% if location == start %}selected{% endif %}>{{ location }}</option>
+                    {% endfor %}
+                </select>
+                <label for="goal">Goal:</label>
+                <select name="goal" id="goal">
+                    {% for location in locations %}
+                        <option value="{{ location }}" {% if location == goal %}selected{% endif %}>{{ location }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Find Path</button>
+            </form>
+            {% if path %}
+                <h2>Path:</h2>
+                <p>{{ " -> ".join(path) }}</p>
+            {% endif %}
+        </body>
+        </html>
