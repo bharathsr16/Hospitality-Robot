@@ -1,9 +1,0 @@
-SpeechRecognition
-pyttsx3
-opencv-python
-pyyaml
-nltk
-pvporcupine
-PyQt5
-transformers
-torch
