@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ campus_name }} - Campus Map</title>
+    <style>
+        body { font-family: sans-serif; display: flex; margin: 20px; }
+        .controls { width: 300px; padding-right: 20px; border-right: 1px solid #ccc; }
+        .map-container { position: relative; margin-left: 20px; }
+        .map-image { max-width: 100%; height: auto; border: 1px solid #000; }
+        h1, h2 { color: #333; }
+        .location-dot {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: rgba(255, 0, 0, 0.7);
+            border-radius: 50%;
+            border: 1px solid #fff;
+            transform: translate(-50%, -50%); /* Center the dot on its coordinates */
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .location-dot:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+        .location-label {
+            position: absolute;
+            transform: translate(-50%, 10px); /* Position label below the dot */
+            font-size: 12px;
+            color: #000;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 2px 4px;
+            border-radius: 3px;
+            pointer-events: none; /* So the label doesn't interfere with clicking the dot */
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h1>{{ campus_name }}</h1>
+        <h2>Navigation</h2>
+        <form method="post">
+            <label for="start">Start:</label><br>
+            <select name="start" id="start" style="width: 100%; margin-bottom: 10px;">
+                {% for location in locations %}
+                    <option value="{{ location }}" {% if location == start %}selected{% endif %}>{{ location }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <label for="goal">Goal:</label><br>
+            <select name="goal" id="goal" style="width: 100%; margin-bottom: 10px;">
+                {% for location in locations %}
+                    <option value="{{ location }}" {% if location == goal %}selected{% endif %}>{{ location }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <button type="submit">Find Path</button>
+        </form>
+        {% if path %}
+            <h2>Path:</h2>
+            <p>{{ " -> ".join(path) }}</p>
+        {% elif request.method == 'POST' %}
+            <h2>Path:</h2>
+            <p style="color: red;">A path could not be found.</p>
+        {% endif %}
+    </div>
+
+    <div class="map-container">
+        <h2>Map</h2>
+        <img src="{{ url_for('static', filename='images/main_campus_map.png') }}" alt="Campus Map" class="map-image">
+
+        <!-- Render location dots -->
+        {% for name, coords in robot_locations.items() %}
+        <div class="location-dot" style="left: {{ coords.x }}px; top: {{ coords.y }}px;" title="{{ name }}">
+            <span class="location-label">{{ name }}</span>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</body>
+</html>

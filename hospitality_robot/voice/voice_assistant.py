@@ -4,6 +4,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 import os
 import sys
+import tempfile
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -59,18 +60,15 @@ def speak(text):
     Converts text to speech and plays it.
     """
     tts = gTTS(text=text, lang='en')
-    audio_path = "/tmp/response.mp3"
-    tts.save(audio_path)
-    try:
-        song = AudioSegment.from_mp3(audio_path)
-        # Audio playback may fail in environments without a configured audio output.
-        play(song)
-    except Exception as e:
-        print(f"Error playing sound: {e}")
-        print("Audio playback failed. This is expected in some environments.")
-    finally:
-        if os.path.exists(audio_path):
-            os.remove(audio_path)
+    with tempfile.NamedTemporaryFile(delete=True, suffix='.mp3') as fp:
+        tts.save(fp.name)
+        try:
+            song = AudioSegment.from_mp3(fp.name)
+            # Audio playback may fail in environments without a configured audio output.
+            play(song)
+        except Exception as e:
+            print(f"Error playing sound: {e}")
+            print("Audio playback failed. This is expected in some environments.")
 
 if __name__ == '__main__':
     # Since we can't use a microphone, we'll simulate with a pre-recorded audio file.

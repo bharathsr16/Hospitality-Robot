@@ -3,6 +3,7 @@ import os
 import numpy as np
 from gtts import gTTS
 from playsound import playsound
+import tempfile
 
 
 def detect_faces(image_path):
@@ -33,17 +34,13 @@ def greet_guest():
     greeting_text = "Hello! Welcome to the event. How can I help you?"
     print(greeting_text)
     tts = gTTS(text=greeting_text, lang='en')
-    # Use a path that is guaranteed to be writable
-    audio_path = "/tmp/greeting.mp3"
-    tts.save(audio_path)
-    try:
-        playsound(audio_path)
-    except Exception as e:
-        print(f"Error playing sound: {e}")
-        print("Please ensure you have a display environment for playsound to work, or install pygobject.")
-    finally:
-        if os.path.exists(audio_path):
-            os.remove(audio_path)
+    with tempfile.NamedTemporaryFile(delete=True, suffix='.mp3') as fp:
+        tts.save(fp.name)
+        try:
+            playsound(fp.name)
+        except Exception as e:
+            print(f"Error playing sound: {e}")
+            print("Please ensure you have a display environment for playsound to work, or install pygobject.")
 
 
 if __name__ == '__main__':

@@ -17,11 +17,9 @@ class Graph:
         self.distances[(to_node, from_node)] = distance
 
 def heuristic(a, b):
-    # A simple heuristic for A* (Manhattan distance, assuming a grid)
-    # In a real scenario, this would be based on actual coordinates.
-    (x1, y1) = b
-    (x2, y2) = a
-    return abs(x1 - x2) + abs(y1 - y2)
+    # A simple heuristic for A* (Manhattan distance)
+    # It now correctly handles dictionary inputs for coordinates
+    return abs(a['x'] - b['x']) + abs(a['y'] - b['y'])
 
 def a_star_search(graph, start, goal, locations):
     frontier = []

@@ -1,19 +1,19 @@
 import os
 import sys
 import tempfile
-import sqlite3
-import heapq
 from gtts import gTTS
 from playsound import playsound
 
-# --- Database Functions ---
+# --- Add hospitality_robot to Python Path ---
+sys.path.append(os.path.join(os.path.dirname(__file__), 'hospitality_robot'))
+
+# --- Copied and corrected code from all modules ---
+
+# from database.event_manager
+import sqlite3
+
 def get_event_details(event_name):
-    # Correctly locate the database relative to this script
-    db_path = os.path.join(os.path.dirname(__file__), 'database', 'events.db')
-    if not os.path.exists(db_path):
-        print(f"Error: Database not found at {db_path}")
-        # Attempt to create it if it's missing
-        setup_database(db_path)
+    db_path = os.path.join('hospitality_robot', 'database', 'events.db')
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("SELECT * FROM events WHERE name LIKE ?", ('%' + event_name + '%',))
@@ -21,28 +21,9 @@ def get_event_details(event_name):
     conn.close()
     return event
 
-def setup_database(db_path):
-    print("Database not found. Creating and populating a new one.")
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    conn = sqlite3.connect(db_path)
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS events (
-            id INTEGER PRIMARY KEY, name TEXT, location TEXT,
-            start_time TEXT, end_time TEXT, description TEXT
-        )
-    ''')
-    events = [
-        (1, 'Tech Talk', 'Auditorium', '10:00', '11:00', 'A talk on AI.'),
-        (2, 'Coding Workshop', 'Block B', '11:30', '13:30', 'A Python workshop.'),
-        (3, 'Project Expo', 'Exhibition Hall', '14:00', '17:00', 'Student projects.')
-    ]
-    c.executemany('INSERT OR IGNORE INTO events VALUES (?,?,?,?,?,?)', events)
-    conn.commit()
-    conn.close()
+# from navigation.pathfinder
+import heapq
 
-
-# --- Navigation Classes and Functions ---
 class Graph:
     def __init__(self):
         self.nodes = set()
@@ -67,17 +48,19 @@ def heuristic(a, b):
 def a_star_search(graph, start, goal, locations):
     frontier = []
     heapq.heappush(frontier, (0, start))
-    came_from = {start: None}
-    cost_so_far = {start: 0}
+    came_from = {}
+    cost_so_far = {}
+    came_from[start] = None
+    cost_so_far[start] = 0
 
     while frontier:
-        current_priority, current = heapq.heappop(frontier)
+        current = heapq.heappop(frontier)[1]
         if current == goal: break
-        for next_node in graph.edges.get(current, []):
-            new_cost = cost_so_far[current] + graph.distances.get((current, next_node), float('inf'))
+        for next_node in graph.edges[current]:
+            new_cost = cost_so_far[current] + graph.distances[(current, next_node)]
             if next_node not in cost_so_far or new_cost < cost_so_far[next_node]:
                 cost_so_far[next_node] = new_cost
-                priority = new_cost + heuristic(locations.get(goal, (0,0)), locations.get(next_node, (0,0)))
+                priority = new_cost + heuristic(locations[goal], locations[next_node])
                 heapq.heappush(frontier, (priority, next_node))
                 came_from[next_node] = current
     return came_from, cost_so_far
@@ -85,34 +68,26 @@ def a_star_search(graph, start, goal, locations):
 def reconstruct_path(came_from, start, goal):
     current = goal
     path = []
-    if goal not in came_from:
-        return None # Goal is unreachable
     while current != start:
         path.append(current)
-        if current not in came_from or came_from[current] is None and current != start:
-             return None # Path broken
-        current = came_from.get(current)
+        current = came_from[current]
     path.append(start)
     path.reverse()
     return path
 
-# --- Greeting Function (Corrected for Windows) ---
+# from vision.face_detector (corrected)
 def greet_guest():
     greeting_text = "Hello! Welcome to the event. How can I help you?"
     print(greeting_text)
+    tts = gTTS(text=greeting_text, lang='en')
     try:
-        tts = gTTS(text=greeting_text, lang='en')
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
-            temp_path = fp.name
-        tts.save(temp_path)
-        playsound(temp_path)
-        os.remove(temp_path)
+        with tempfile.NamedTemporaryFile(delete=True, suffix='.mp3') as fp:
+            tts.save(fp.name)
+            playsound(fp.name)
     except Exception as e:
-        print(f"An error occurred during text-to-speech or playback: {e}")
-        print("(Continuing without audio.)")
+        print(f"Error playing sound: {e}")
 
-
-# --- Main Application Logic ---
+# from main (integrated)
 def setup_campus_map():
     campus_map = Graph()
     locations = {
@@ -128,17 +103,13 @@ def setup_campus_map():
     campus_map.add_edge('Auditorium', 'Exhibition Hall', 10)
     return campus_map, locations
 
-def main():
-    print("Hospitality Robot Activated.")
+def main_windows():
+    print("Hospitality Robot Activated (Windows Version).")
     campus_map, locations = setup_campus_map()
-
     print("Guest detected.")
     greet_guest()
-
-    # Simulate a voice command
     command = "where is the tech talk"
     print(f"\nSimulated command: '{command}'")
-
     if "where is the" in command:
         event_name = command.split("where is the")[-1].strip()
         event = get_event_details(event_name)
@@ -148,16 +119,13 @@ def main():
             if destination in locations:
                 came_from, cost_so_far = a_star_search(campus_map, start_location, destination, locations)
                 path = reconstruct_path(came_from, start_location, destination)
-                if path:
-                    directions = " -> ".join(path)
-                    response = f"To get to the {event[1]}, you can follow this path: {directions}"
-                    print(response)
-                else:
-                    print(f"Sorry, I could not find a path to {destination}.")
+                directions = " -> ".join(path)
+                response = f"To get to the {event[1]}, you can follow this path: {directions}"
+                print(response)
             else:
-                print(f"I know about the {event_name}, but I don't have its location '{destination}' on my map.")
+                print(f"I know about the {event_name}, but I don't have its location on my map.")
         else:
-            print(f"Sorry, I couldn't find any event named '{event_name}'.")
+            print(f"Sorry, I couldn't find any event named {event_name}.")
 
 if __name__ == '__main__':
-    main()
+    main_windows()

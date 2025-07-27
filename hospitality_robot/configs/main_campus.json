@@ -1,0 +1,52 @@
+{
+  "name": "Main Campus",
+  "map_image": "images/main_campus_map.png",
+  "locations": {
+    "Entrance": {"x": 50, "y": 450},
+    "Auditorium": {"x": 250, "y": 150},
+    "Block A": {"x": 200, "y": 300},
+    "Block B": {"x": 450, "y": 350},
+    "Exhibition Hall": {"x": 350, "y": 200},
+    "Open Air Theatre": {"x": 550, "y": 100}
+  },
+  "graph": {
+    "edges": [
+      {"from": "Entrance", "to": "Block A", "distance": 10},
+      {"from": "Block A", "to": "Auditorium", "distance": 5},
+      {"from": "Block A", "to": "Block B", "distance": 15},
+      {"from": "Block B", "to": "Exhibition Hall", "distance": 5},
+      {"from": "Block B", "to": "Open Air Theatre", "distance": 20},
+      {"from": "Auditorium", "to": "Exhibition Hall", "distance": 10}
+    ]
+  },
+  "events": [
+    {
+      "name": "Tech Talk",
+      "location": "Auditorium",
+      "start_time": "10:00",
+      "end_time": "11:00",
+      "description": "A fascinating talk on the future of Artificial Intelligence."
+    },
+    {
+      "name": "Coding Workshop",
+      "location": "Block B",
+      "start_time": "11:30",
+      "end_time": "13:30",
+      "description": "A hands-on workshop for learning Python programming from scratch."
+    },
+    {
+      "name": "Project Expo",
+      "location": "Exhibition Hall",
+      "start_time": "14:00",
+      "end_time": "17:00",
+      "description": "A showcase of the best final-year student projects."
+    },
+    {
+      "name": "Cultural Night",
+      "location": "Open Air Theatre",
+      "start_time": "18:00",
+      "end_time": "20:00",
+      "description": "A vibrant evening of music and dance performances."
+    }
+  ]
+}
